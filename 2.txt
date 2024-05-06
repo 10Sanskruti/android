@@ -1,0 +1,346 @@
+Slip 2.
+
+1]
+Step 1: Create the Main Activity
+Create an activity to handle user input and check if a number is a perfect number.
+
+java
+
+package com.example.perfectnumberapp;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText numberInput;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        numberInput = findViewById(R.id.number_input);
+        Button checkButton = findViewById(R.id.check_button);
+
+        checkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkPerfectNumber();
+            }
+        });
+    }
+
+    // Function to determine if a number is a perfect number
+    private boolean isPerfectNumber(int number) {
+        if (number <= 1) {
+            return false; // No perfect numbers less than or equal to 1
+        }
+
+        int sumOfDivisors = 0;
+        // Find all divisors (excluding the number itself)
+        for (int i = 1; i < number; i++) {
+            if (number % i == 0) { // If it's a divisor
+                sumOfDivisors += i;
+            }
+        }
+
+        // Check if the sum of divisors equals the original number
+        return sumOfDivisors == number;
+    }
+
+    // Function to check and display if the entered number is a perfect number
+    private void checkPerfectNumber() {
+        try {
+            int number = Integer.parseInt(numberInput.getText().toString());
+            boolean isPerfect = isPerfectNumber(number);
+
+            if (isPerfect) {
+                Toast.makeText(this, number + " is a perfect number!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, number + " is NOT a perfect number.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Please enter a valid integer.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 2: Create the Layout File
+Define a simple layout with a text box for user input and a button to trigger the perfect number check.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter a number"
+        android:inputType="number"/>
+
+    <Button
+        android:id="@+id/check_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check Perfect Number"/>
+
+</LinearLayout>
+
+2]
+Step 1: Create the Main Activity
+This activity will contain the logic for performing arithmetic operations.
+
+java
+
+package com.example.calculatorapp;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText display; // This is the calculator's display
+    private StringBuilder currentInput = new StringBuilder(); // To hold the current input
+    private double firstOperand = 0;
+    private String operation = ""; // Stores the current operation (+, -, *, /)
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        display = findViewById(R.id.display);
+        display.setText(""); // Start with an empty display
+
+        // Button click listeners for digits 0-9
+        int[] digitButtons = {
+                R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4,
+                R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9
+        };
+
+        for (int id : digitButtons) {
+            Button button = findViewById(id);
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Button b = (Button) v;
+                    currentInput.append(b.getText().toString());
+                    display.setText(currentInput.toString());
+                }
+            });
+        }
+
+        // Set up operation buttons
+        setOperationButton(R.id.button_add, "+");
+        setOperationButton(R.id.button_subtract, "-");
+        setOperationButton(R.id.button_multiply, "*");
+        setOperationButton(R.id.button_divide, "/");
+
+        // Equals button to perform the calculation
+        Button equalsButton = findViewById(R.id.button_equals);
+        equalsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                double secondOperand = Double.parseDouble(currentInput.toString());
+                double result = 0;
+
+                switch (operation) {
+                    case "+":
+                        result = firstOperand + secondOperand;
+                        break;
+                    case "-":
+                        result = firstOperand - secondOperand;
+                        break;
+                    case "*":
+                        result = firstOperand * secondOperand;
+                        break;
+                    case "/":
+                        if (secondOperand != 0) {
+                            result = firstOperand / secondOperand;
+                        } else {
+                            display.setText("Error");
+                            return; // Avoid division by zero
+                        }
+                        break;
+                }
+
+                display.setText(String.valueOf(result)); // Display the result
+                currentInput = new StringBuilder(String.valueOf(result)); // Update current input
+            }
+        });
+
+        // Clear button to reset the calculator
+        Button clearButton = findViewById(R.id.button_clear);
+        clearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentInput = new StringBuilder();
+                display.setText("");
+                firstOperand = 0;
+                operation = "";
+            }
+        });
+    }
+
+    private void setOperationButton(int buttonId, String op) {
+        Button button = findViewById(buttonId);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentInput.length() > 0) {
+                    firstOperand = Double.parseDouble(currentInput.toString());
+                    operation = op;
+                    currentInput = new StringBuilder();
+                    display.setText(op); // Display the operation for feedback
+                }
+            }
+        });
+    }
+}
+Step 2: Create the Layout File
+Create a simple calculator layout with buttons for digits, operations, and control elements.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/display"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="none" <!-- Disable keyboard input -->
+        android:gravity="right" <!-- Align text to the right -->
+        android:background="@android:color/white"
+        android:textSize="24sp"
+        android:padding="10dp"
+        android:focusable="false"
+        android:focusableInTouchMode="false"/>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnCount="4">
+
+        <!-- First row: Digits 7, 8, 9, and Divide -->
+        <Button
+            android:id="@+id/button7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="7"/>
+
+        <Button
+            android:id="@+id/button8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="8"/>
+
+        <Button
+            android:id="@+id/button9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="9"/>
+
+        <Button
+            android:id="@+id/button_divide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="/"/>
+
+        <!-- Second row: Digits 4, 5, 6, and Multiply -->
+        <Button
+            android:id="@+id/button4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4"/>
+
+        <Button
+            android:id="@+id/button5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="5"/>
+
+        <Button
+            android:id="@+id/button6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6"/>
+
+        <Button
+            android:id="@+id/button_multiply"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="*"/>
+
+        <!-- Third row: Digits 1, 2, 3, and Subtract -->
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1"/>
+
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2"/>
+
+        <Button
+            android:id="@+id/button3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3"/>
+
+        <Button
+            android:id="@+id/button_subtract"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="-"/>
+
+        <!-- Fourth row: Digits 0, Clear, Equals, and Add -->
+        <Button
+            android:id="@+id/button0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0"/>
+
+        <Button
+            android:id="@+id/button_clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="C"/>
+
+        <Button
+            android:id="@+id/button_equals"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="="/>
+
+        <Button
+            android:id="@+id/button_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+"/>
+
+    </GridLayout>
+
+</LinearLayout>

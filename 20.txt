@@ -1,0 +1,193 @@
+Slip 20
+
+1]
+Step 1: Create the Main Activity
+This activity will contain the logic to accept user input, check the numbers, and either display them or reject the input if both numbers are greater than 20.
+
+java
+
+package com.example.twonumbers;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText firstNumberInput, secondNumberInput;
+    private TextView resultText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        firstNumberInput = findViewById(R.id.first_number_input);
+        secondNumberInput = findViewById(R.id.second_number_input);
+        resultText = findViewById(R.id.result_text);
+
+        Button submitButton = findViewById(R.id.submit_button); // Button to submit the input
+        submitButton.setOnClickListener(v -> validateAndDisplayNumbers());
+    }
+
+    private void validateAndDisplayNumbers() {
+        String firstNumberStr = firstNumberInput.getText().toString().trim();
+        String secondNumberStr = secondNumberInput.getText().toString().trim();
+
+        if (TextUtils.isEmpty(firstNumberStr) || TextUtils.isEmpty(secondNumberStr)) {
+            Toast.makeText(this, "Please enter both numbers.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            int firstNumber = Integer.parseInt(firstNumberStr);
+            int secondNumber = Integer.parseInt(secondNumberStr);
+
+            if (firstNumber > 20 && secondNumber > 20) {
+                Toast.makeText(this, "Both numbers are greater than 20. Please enter new numbers.", Toast.LENGTH_SHORT).show();
+                firstNumberInput.setText(""); // Clear the inputs
+                secondNumberInput.setText("");
+            } else {
+                resultText.setText("First Number: " + firstNumber + "\nSecond Number: " + secondNumber);
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid input. Please enter valid numbers.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 2: Create the Layout File
+This layout includes EditText for user input, a Button to submit the numbers, and a TextView to display the result or error messages.
+
+res/layout/activity_main.xml
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/first_number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter first number"/>
+
+    <EditText
+        android:id="@+id/second_number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter second number"/>
+
+    <Button
+        android:id="@+id/submit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit"/>
+
+    <TextView
+        android:id="@+id/result_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Result will be displayed here"/>
+
+</LinearLayout>
+
+2]
+Step 1: Create the Main Activity
+In this activity, define the logic to send an email with an attachment.
+
+java
+
+package com.example.sendemail;
+
+import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.File;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button sendEmailButton = findViewById(R.id.send_email_button);
+        sendEmailButton.setOnClickListener(v -> sendEmailWithAttachment());
+    }
+
+    private void sendEmailWithAttachment() {
+        // Replace with a valid file path for the attachment
+        File file = new File(getExternalFilesDir(null), "example.txt");
+
+        if (!file.exists()) {
+            Toast.makeText(this, "Attachment file not found.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Uri fileUri = Uri.fromFile(file); // Create a URI from the file
+
+        Intent emailIntent = new Intent(Intent.ACTION_SEND);
+        emailIntent.setType("application/pdf"); // Or the appropriate MIME type for your attachment
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"recipient@example.com"}); // Set recipient
+        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "Subject of Email"); // Set subject
+        emailIntent.putExtra(Intent.EXTRA_TEXT, "This is the body of the email."); // Set email body
+        emailIntent.putExtra(Intent.EXTRA_STREAM, fileUri); // Attach the file
+
+        try {
+            startActivity(Intent.createChooser(emailIntent, "Send email with..."));
+        } catch (Exception e) {
+            Toast.makeText(this, "No email clients installed.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 2: Create the Layout File
+Design a simple layout with a button to trigger sending the email with the attachment.
+
+res/layout/activity_main.xml
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <Button
+        android:id="@+id/send_email_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Email with Attachment"/>
+
+</LinearLayout>
+Step 3: Handle Permissions (Optional)
+If the attachment requires access to external storage, ensure you have the proper permissions.
+
+AndroidManifest.xml
+xml
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.example.sendemail">
+
+    <application>
+        <!-- Your application code -->
+    </application>
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/> <!-- Required for accessing files from external storage -->
+
+</manifest>

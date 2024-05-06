@@ -1,0 +1,278 @@
+Slip 4
+
+1]
+Step 1: Create the Main Activity
+In this step, create an ImageSwitcher and configure it with the setFactory() method to define the ImageView instances it uses.
+
+java
+
+package com.example.imageswitcherexample;
+
+import android.os.Bundle;
+import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
+import android.widget.ImageSwitcher;
+import android.widget.ImageView;
+import android.widget.ViewSwitcher;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ImageSwitcher imageSwitcher;
+    private int[] imageResources = {R.drawable.image1, R.drawable.image2, R.drawable.image3};
+    private int currentIndex = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        imageSwitcher = findViewById(R.id.image_switcher);
+
+        // Define the factory for creating ImageViews in the ImageSwitcher
+        imageSwitcher.setFactory(new ViewSwitcher.ViewFactory() {
+            @Override
+            public View makeView() {
+                ImageView imageView = new ImageView(MainActivity.this);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP); // Set scaling
+                imageView.setLayoutParams(new ImageSwitcher.LayoutParams(
+                        ImageSwitcher.LayoutParams.MATCH_PARENT,
+                        ImageSwitcher.LayoutParams.MATCH_PARENT));
+                return imageView;
+            }
+        });
+
+        // Set animations for image switching
+        imageSwitcher.setInAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_in));
+        imageSwitcher.setOutAnimation(AnimationUtils.loadAnimation(this, android.R.anim.fade_out));
+
+        // Set the initial image
+        imageSwitcher.setImageResource(imageResources[currentIndex]);
+
+        // Next button to switch to the next image
+        Button nextButton = findViewById(R.id.next_button);
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchImage(1);
+            }
+        });
+
+        // Previous button to switch to the previous image
+        Button previousButton = findViewById(R.id.previous_button);
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchImage(-1);
+            }
+        });
+    }
+
+    // Method to switch between images
+    private void switchImage(int direction) {
+        currentIndex = (currentIndex + direction + imageResources.length) % imageResources.length;
+        imageSwitcher.setImageResource(imageResources[currentIndex]);
+    }
+}
+Step 2: Create the Layout File
+Define the layout with an ImageSwitcher and control buttons for switching images.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <ImageSwitcher
+        android:id="@+id/image_switcher"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:layout_gravity="center"/>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/previous_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Previous"/>
+
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next"/>
+
+    </LinearLayout>
+
+</LinearLayout>
+
+2]
+Step 1: Set Up Google Maps API Key
+Follow Google's documentation on setting up the Google Maps API for Android: Google Maps Setup Guide.
+Create a new project on Google Cloud Platform, enable Google Maps Android API, and generate an API key.
+Add the API key to your AndroidManifest.xml.
+xml
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.googlemapssearch">
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.GoogleMapsSearch">
+        
+        <!-- API Key for Google Maps -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="YOUR_GOOGLE_MAPS_API_KEY"/>
+
+        <!-- Main Activity with Map Fragment -->
+        <activity
+            android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+Replace YOUR_GOOGLE_MAPS_API_KEY with the API key obtained from Google Cloud Platform.
+
+Step 2: Create the Main Activity
+This activity will contain a MapFragment to display Google Maps and an EditText for entering the search query.
+
+java
+
+package com.example.googlemapssearch;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.location.GeocoderApi;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private GoogleMap googleMap;
+    private EditText searchBox;
+    private Button searchButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        searchBox = findViewById(R.id.search_box);
+        searchButton = findViewById(R.id.search_button);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchLocation();
+            }
+        });
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        googleMap = map;
+
+        // Initial location (e.g., San Francisco)
+        LatLng initialLocation = new LatLng(37.7749, -122.4194);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLocation, 10));
+    }
+
+    private void searchLocation() {
+        String location = searchBox.getText().toString();
+
+        if (TextUtils.isEmpty(location)) {
+            Toast.makeText(this, "Please enter a location to search.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Use Geocoder to get latitude and longitude from location name
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(location, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+
+                // Move the map to the location and add a marker
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+                googleMap.addMarker(new MarkerOptions().position(latLng).title("Location: " + location));
+            } else {
+                Toast.makeText(this, "Location not found.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            Toast.makeText(this, "Error while searching for location.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 3: Create the Layout File
+Define the layout with an EditText for the search box, a Button to trigger the search, and a MapFragment to display Google Maps.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/search_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Enter location"/>
+
+        <Button
+            android:id="@+id/search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Search"/>
+
+    </LinearLayout>
+
+    <fragment
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>

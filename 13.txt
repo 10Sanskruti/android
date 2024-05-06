@@ -1,0 +1,282 @@
+Slip 13
+
+1]
+Step 1: Create the Main Activity
+In this activity, implement the user interface for the registration form and validation logic.
+
+java
+
+package com.example.registrationform;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText firstNameInput;
+    private EditText lastNameInput;
+    private EditText emailInput;
+    private EditText passwordInput;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        firstNameInput = findViewById(R.id.first_name_input);
+        lastNameInput = findViewById(R.id.last_name_input);
+        emailInput = findViewById(R.id.email_input);
+        passwordInput = findViewById(R.id.password_input);
+
+        Button submitButton = findViewById(R.id.submit_button);
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateAndSubmit();
+            }
+        });
+    }
+
+    private void validateAndSubmit() {
+        String firstName = firstNameInput.getText().toString().trim();
+        String lastName = lastNameInput.getText().toString().trim();
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
+
+        // Validate first name
+        if (TextUtils.isEmpty(firstName)) {
+            Toast.makeText(this, "First name is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validate last name
+        if (TextUtils.isEmpty(lastName)) {
+            Toast.makeText(this, "Last name is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validate email
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            Toast.makeText(this, "Invalid email address.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Validate password (at least 6 characters)
+        if (password.length() < 6) {
+            Toast.makeText(this, "Password must be at least 6 characters.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // If all validations pass, simulate registration success
+        Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show();
+    }
+}
+Step 2: Create the Layout File
+Design the registration form with fields for first name, last name, email, password, and a submit button.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/first_name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="First Name"/>
+
+    <EditText
+        android:id="@+id/last_name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Last Name"/>
+
+    <EditText
+        android:id="@+id/email_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"/>
+
+    <EditText
+        android:id="@+id/password_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"/>
+
+    <Button
+        android:id="@+id/submit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Submit"/>
+
+</LinearLayout>
+
+2]
+Step 1: Create the Main Activity
+In this step, you'll implement the ListView and its operations, including insert, delete, and search.
+
+java
+
+package com.example.listviewoperations;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ListView listView;
+    private EditText itemInput;
+    private List<String> itemList;
+    private ArrayAdapter<String> listAdapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        listView = findViewById(R.id.list_view);
+        itemInput = findViewById(R.id.item_input);
+
+        itemList = new ArrayList<>(); // List to hold ListView items
+        listAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, itemList);
+        listView.setAdapter(listAdapter);
+
+        // Button to insert new items
+        Button insertButton = findViewById(R.id.insert_button);
+        insertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                insertItem();
+            }
+        });
+
+        // Button to delete the selected item from the ListView
+        Button deleteButton = findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteItem();
+            }
+        });
+
+        // Button to search for items in the ListView
+        Button searchButton = findViewById(R.id.search_button);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchItem();
+            }
+        });
+    }
+
+    private void insertItem() {
+        String item = itemInput.getText().toString().trim();
+
+        if (TextUtils.isEmpty(item)) {
+            Toast.makeText(this, "Please enter an item.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        itemList.add(item); // Add the item to the list
+        listAdapter.notifyDataSetChanged(); // Update the ListView
+        itemInput.setText(""); // Clear the input field
+        Toast.makeText(this, "Item inserted.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void deleteItem() {
+        int position = listView.getCheckedItemPosition(); // Get the selected item position
+
+        if (position >= 0 && position < itemList.size()) {
+            itemList.remove(position); // Remove the item from the list
+            listAdapter.notifyDataSetChanged(); // Update the ListView
+            listView.clearChoices(); // Clear the selected item
+            Toast.makeText(this, "Item deleted.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Please select an item to delete.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void searchItem() {
+        String item = itemInput.getText().toString().trim();
+
+        if (TextUtils.isEmpty(item)) {
+            Toast.makeText(this, "Please enter an item to search.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        boolean found = itemList.contains(item); // Check if the item exists in the list
+        if (found) {
+            int position = itemList.indexOf(item); // Get the position of the item
+            listView.setSelection(position); // Scroll to the item in the ListView
+            Toast.makeText(this, "Item found at position " + position, Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Item not found.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 2: Create the Layout File
+This layout includes a ListView to display items, an EditText for user input, and buttons for insert, delete, and search operations.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/item_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter item"/>
+
+    <Button
+        android:id="@+id/insert_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Insert Item"/>
+
+    <Button
+        android:id="@+id/delete_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Delete Selected Item"/>
+
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Search Item"/>
+
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

@@ -1,0 +1,355 @@
+Slip 7
+
+1]
+Step 1: Create the Main Activity
+In this step, we'll create an activity that demonstrates an indeterminate progress bar and a determinate progress bar. We'll simulate a long-running task with a background thread to update the determinate progress bar.
+
+java
+
+package com.example.progressbardemo;
+
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ProgressBar indeterminateProgressBar;
+    private ProgressBar determinateProgressBar;
+    private TextView progressText;
+    private Handler handler = new Handler();
+    private int progress = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        indeterminateProgressBar = findViewById(R.id.indeterminate_progress_bar);
+        determinateProgressBar = findViewById(R.id.determinate_progress_bar);
+        progressText = findViewById(R.id.progress_text);
+
+        // Button to start a task with indeterminate progress bar
+        Button startIndeterminateButton = findViewById(R.id.start_indeterminate_button);
+        startIndeterminateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startIndeterminateTask();
+            }
+        });
+
+        // Button to start a task with determinate progress bar
+        Button startDeterminateButton = findViewById(R.id.start_determinate_button);
+        startDeterminateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startDeterminateTask();
+            }
+        });
+    }
+
+    // Simulate an indeterminate task
+    private void startIndeterminateTask() {
+        indeterminateProgressBar.setVisibility(View.VISIBLE);
+
+        // Simulate a long-running task using a handler to delay hiding the progress bar
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                indeterminateProgressBar.setVisibility(View.GONE);
+            }
+        }, 3000); // Simulate a 3-second task
+    }
+
+    // Simulate a determinate task with progress updates
+    private void startDeterminateTask() {
+        progress = 0; // Reset progress
+        determinateProgressBar.setProgress(progress);
+        determinateProgressBar.setVisibility(View.VISIBLE);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (progress < 100) {
+                    progress += 10; // Increment progress
+
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            determinateProgressBar.setProgress(progress);
+                            progressText.setText("Progress: " + progress + "%");
+                        }
+                    });
+
+                    try {
+                        Thread.sleep(500); // Simulate time delay between progress updates
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // Hide progress bar and reset text when complete
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        determinateProgressBar.setVisibility(View.GONE);
+                        progressText.setText("Task complete!");
+                    }
+                });
+            }
+        }).start();
+    }
+}
+Step 2: Create the Layout File
+This layout will have a button to start an indeterminate task and another button to start a determinate task, with progress bars and a text view to indicate progress.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/start_indeterminate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Indeterminate Task"/>
+
+    <ProgressBar
+        android:id="@+id/indeterminate_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" <!-- Initially hidden -->
+        android:indeterminate="true"/> <!-- Indeterminate mode -->
+
+    <Button
+        android:id="@+id/start_determinate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start Determinate Task"/>
+
+    <ProgressBar
+        android:id="@+id/determinate_progress_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/> <!-- Initially hidden -->
+
+    <TextView
+        android:id="@+id/progress_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""/>
+
+</LinearLayout>
+
+2]
+Step 1: Create the Database Helper
+This class manages the creation and operations of the SQLite database.
+
+java
+
+package com.example.employeemanagement;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class EmployeeDatabaseHelper extends SQLiteOpenHelper {
+
+    private static final String DATABASE_NAME = "EmployeeDatabase";
+    private static final int DATABASE_VERSION = 1;
+
+    private static final String TABLE_EMPLOYEE = "Employee";
+    private static final String COLUMN_E_ID = "E_id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_ADDRESS = "address";
+    private static final String COLUMN_PH_NO = "ph_no";
+
+    public EmployeeDatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // Create the Employee table
+        String createTableQuery = "CREATE TABLE " + TABLE_EMPLOYEE + " (" +
+                COLUMN_E_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_NAME + " TEXT, " +
+                COLUMN_ADDRESS + " TEXT, " +
+                COLUMN_PH_NO + " TEXT)";
+        db.execSQL(createTableQuery);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_EMPLOYEE);
+        onCreate(db);
+    }
+
+    // Insert a new employee record
+    public boolean insertEmployee(String name, String address, String ph_no) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, name);
+        values.put(COLUMN_ADDRESS, address);
+        values.put(COLUMN_PH_NO, ph_no);
+
+        long result = db.insert(TABLE_EMPLOYEE, null, values);
+        return result != -1; // Returns true if insertion was successful
+    }
+
+    // Retrieve all employee records
+    public Cursor getAllEmployees() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_EMPLOYEE;
+        return db.rawQuery(query, null);
+    }
+}
+Step 2: Create the Main Activity
+This activity handles user input for inserting new employees and displays all employee records.
+
+java
+
+package com.example.employeemanagement;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EmployeeDatabaseHelper dbHelper;
+    private EditText nameInput, addressInput, phNoInput;
+    private TextView resultView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        dbHelper = new EmployeeDatabaseHelper(this);
+
+        nameInput = findViewById(R.id.name_input);
+        addressInput = findViewById(R.id.address_input);
+        phNoInput = findViewById(R.id.ph_no_input);
+
+        Button insertButton = findViewById(R.id.insert_button);
+        Button showAllButton = findViewById(R.id.show_all_button);
+
+        resultView = findViewById(R.id.result_view);
+
+        insertButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                insertEmployee();
+            }
+        });
+
+        showAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showAllEmployees();
+            }
+        });
+    }
+
+    private void insertEmployee() {
+        String name = nameInput.getText().toString();
+        String address = addressInput.getText().toString();
+        String ph_no = phNoInput.getText().toString();
+
+        if (dbHelper.insertEmployee(name, address, ph_no)) {
+            resultView.setText("Employee inserted successfully.");
+        } else {
+            resultView.setText("Error inserting employee.");
+        }
+    }
+
+    private void showAllEmployees() {
+        Cursor cursor = dbHelper.getAllEmployees();
+        if (cursor != null && cursor.moveToFirst()) {
+            StringBuilder sb = new StringBuilder();
+            do {
+                int e_id = cursor.getInt(cursor.getColumnIndex(EmployeeDatabaseHelper.COLUMN_E_ID));
+                String name = cursor.getString(cursor.getColumnIndex(EmployeeDatabaseHelper.COLUMN_NAME));
+                String address = cursor.getString(cursor.getColumnIndex(EmployeeDatabaseHelper.COLUMN_ADDRESS));
+                String ph_no = cursor.getString(cursor.getColumnIndex(EmployeeDatabaseHelper.COLUMN_PH_NO));
+
+                sb.append("Employee ID: ").append(e_id).append("\n");
+                sb.append("Name: ").append(name).append("\n");
+                sb.append("Address: ").append(address).append("\n");
+                sb.append("Phone Number: ").append(ph_no).append("\n");
+                sb.append("----------------------------\n");
+            } while (cursor.moveToNext());
+
+            resultView.setText(sb.toString());
+        } else {
+            resultView.setText("No employee records found.");
+        }
+    }
+}
+Step 3: Create the Layout File
+Design a layout that includes input fields for employee details, buttons to insert and display employee records, and a text view to display results.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter employee name"/>
+
+    <EditText
+        android:id="@+id/address_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter employee address"/>
+
+    <EditText
+        android:id="@+id/ph_no_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter employee phone number"/>
+
+    <Button
+        android:id="@+id/insert_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Insert Employee"/>
+
+    <Button
+        android:id="@+id/show_all_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show All Employees"/>
+
+    <TextView
+        android:id="@+id/result_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:paddingTop="16dp"/>
+
+</LinearLayout>

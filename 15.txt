@@ -1,0 +1,463 @@
+Slip 15
+
+1]
+Step 1: Create the Main Activity
+This activity will implement the logic to accept two numbers, perform arithmetic operations, and display the results using Toast.
+
+java
+
+package com.example.arithmeticcalculator;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText number1Input;
+    private EditText number2Input;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        number1Input = findViewById(R.id.number1_input); // EditText for first number
+        number2Input = findViewById(R.id.number2_input); // EditText for second number
+
+        Button addButton = findViewById(R.id.add_button); // Button for addition
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performAddition();
+            }
+        });
+
+        Button subButton = findViewById(R.id.sub_button); // Button for subtraction
+        subButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performSubtraction();
+            }
+        });
+
+        Button divButton = findViewById(R.id.div_button); // Button for division
+        divButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performDivision();
+            }
+        });
+
+        Button multButton = findViewById(R.id.mult_button); // Button for multiplication
+        multButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                performMultiplication();
+            }
+        });
+    }
+
+    private void performAddition() {
+        String num1Str = number1Input.getText().toString().trim();
+        String num2Str = number2Input.getText().toString().trim();
+
+        if (TextUtils.isEmpty(num1Str) || TextUtils.isEmpty(num2Str)) {
+            Toast.makeText(this, "Please enter both numbers.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double num1 = Double.parseDouble(num1Str);
+            double num2 = Double.parseDouble(num2Str);
+            double result = num1 + num2;
+
+            Toast.makeText(this, "Result: " + result, Toast.LENGTH_SHORT).show();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid number input.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void performSubtraction() {
+        String num1Str = number1Input.getText().toString().trim();
+        String num2Str = number2Input.getText().toString().trim();
+
+        if (TextUtils.isEmpty(num1Str) || TextUtils.isEmpty(num2Str)) {
+            Toast.makeText(this, "Please enter both numbers.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double num1 = Double.parseDouble(num1Str);
+            double num2 = Double.parseDouble(num2Str);
+            double result = num1 - num2;
+
+            Toast.makeText(this, "Result: " + result, Toast.LENGTH_SHORT).show();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid number input.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void performDivision() {
+        String num1Str = number1Input.getText().toString().trim();
+        String num2Str = number2Input.getText().toString().trim();
+
+        if (TextUtils.isEmpty(num1Str) || TextUtils.isEmpty(num2Str)) {
+            Toast.makeText(this, "Please enter both numbers.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double num1 = Double.parseDouble(num1Str);
+            double num2 = Double.parseDouble(num2Str);
+
+            if (num2 == 0) {
+                Toast.makeText(this, "Division by zero is not allowed.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double result = num1 / num2;
+
+            Toast.makeText(this, "Result: " + result, Toast.LENGTH_SHORT).show();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid number input.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void performMultiplication() {
+        String num1Str = number1Input.getText().toString().trim();
+        String num2Str = number2Input.getText().toString().trim();
+
+        if (TextUtils.isEmpty(num1Str) || TextUtils.isEmpty(num2Str)) {
+            Toast.makeText(this, "Please enter both numbers.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double num1 = Double.parseDouble(num1Str);
+            double num2 = Double.parseDouble(num2Str);
+            double result = num1 * num2;
+
+            Toast.makeText(this, "Result: " + result, Toast.LENGTH_SHORT).show();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid number input.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 2: Create the Layout File
+Design the layout with two EditText fields for numbers, four buttons for the arithmetic operations, and use Toast to display results.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/number1_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter first number"/>
+
+    <EditText
+        android:id="@+id/number2_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter second number"/>
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ADD"/>
+
+    <Button
+        android:id="@+id/sub_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="SUB"/>
+
+    <Button
+        android:id="@+id/div_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DIV"/>
+
+    <Button
+        android:id="@+id/mult_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="MULT"/>
+
+</LinearLayout>
+
+2]
+Step 1: Define the Account Model
+The account model represents a simple bank account with properties like account number, account type, and balance.
+
+java
+
+package com.example.simplebankapp;
+
+public class BankAccount {
+
+    private String accountNumber;
+    private String accountType;
+    private double balance;
+
+    public BankAccount(String accountNumber, String accountType, double initialBalance) {
+        this.accountNumber = accountNumber;
+        this.accountType = accountType;
+        this.balance = initialBalance;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public void deposit(double amount) {
+        if (amount > 0) {
+            balance += amount;
+        }
+    }
+
+    public boolean withdraw(double amount) {
+        if (amount > balance || amount <= 0) {
+            return false; // Insufficient funds or invalid amount
+        }
+        balance -= amount;
+        return true;
+    }
+}
+Step 2: Create the Main Activity
+In this activity, implement the user interface and account operations, including creating an account, checking balance, depositing, and withdrawing.
+
+java
+
+package com.example.simplebankapp;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText accountNumberInput;
+    private RadioGroup accountTypeGroup;
+    private EditText amountInput;
+    private TextView resultText;
+
+    private BankAccount bankAccount; // Bank account instance
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        accountNumberInput = findViewById(R.id.account_number_input);
+        accountTypeGroup = findViewById(R.id.account_type_group);
+        amountInput = findViewById(R.id.amount_input);
+        resultText = findViewById(R.id.result_text);
+
+        Button createButton = findViewById(R.id.create_button);
+        createButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createAccount();
+            }
+        });
+
+        Button balanceButton = findViewById(R.id.balance_button);
+        balanceButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkBalance();
+            }
+        });
+
+        Button depositButton = findViewById(R.id.deposit_button);
+        depositButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deposit();
+            }
+        });
+
+        Button withdrawButton = findViewById(R.id.withdraw_button);
+        withdrawButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                withdraw();
+            }
+        });
+    }
+
+    private void createAccount() {
+        String accountNumber = accountNumberInput.getText().toString().trim();
+        int selectedAccountTypeId = accountTypeGroup.getCheckedRadioButtonId();
+        String accountType = (selectedAccountTypeId == R.id.radio_checking) ? "Checking" : "Savings";
+
+        if (TextUtils.isEmpty(accountNumber)) {
+            Toast.makeText(this, "Account number is required.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        bankAccount = new BankAccount(accountNumber, accountType, 0.0);
+        Toast.makeText(this, "Account created successfully.", Toast.LENGTH_SHORT).show();
+    }
+
+    private void checkBalance() {
+        if (bankAccount == null) {
+            Toast.makeText(this, "Please create an account first.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        resultText.setText("Balance: " + bankAccount.getBalance());
+    }
+
+    private void deposit() {
+        if (bankAccount == null) {
+            Toast.makeText(this, "Please create an account first.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String amountStr = amountInput.getText().toString().trim();
+        if (TextUtils.isEmpty(amountStr)) {
+            Toast.makeText(this, "Please enter a deposit amount.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double amount = Double.parseDouble(amountStr);
+            bankAccount.deposit(amount);
+            Toast.makeText(this, "Amount deposited.", Toast.LENGTH_SHORT).show();
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid amount.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void withdraw() {
+        if (bankAccount == null) {
+            Toast.makeText(this, "Please create an account first.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String amountStr = amountInput.getText().toString().trim();
+        if (TextUtils.isEmpty(amountStr)) {
+            Toast.makeText(this, "Please enter a withdrawal amount.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            double amount = Double.parseDouble(amountStr);
+            boolean successful = bankAccount.withdraw(amount);
+
+            if (successful) {
+                Toast.makeText(this, "Amount withdrawn.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Insufficient funds or invalid amount.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid amount.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 3: Create the Layout File
+Design the layout with EditText for account number and amount, RadioGroup for account type, and buttons for the various operations.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/account_number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Account Number"/>
+
+    <RadioGroup
+        android:id="@+id/account_type_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radio_checking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Checking"/>
+
+        <RadioButton
+            android:id="@+id/radio_savings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Savings"/>
+
+    </RadioGroup>
+
+    <EditText
+        android:id="@+id/amount_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Amount"/>
+
+    <Button
+        android:id="@+id/create_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Create Account"/>
+
+    <Button
+        android:id="@+id/balance_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check Balance"/>
+
+    <Button
+        android:id="@+id/deposit_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Deposit"/>
+
+    <Button
+        android:id="@+id/withdraw_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Withdraw"/>
+
+    <TextView
+        android:id="@+id/result_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Result will be displayed here"/>
+
+</LinearLayout>

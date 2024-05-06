@@ -1,0 +1,237 @@
+Slip 19
+
+1]
+Step 1: Define Drawable Resources
+Ensure you have at least two images in your res/drawable folder to switch between. You can add images by dragging them into the drawable folder in your Android project.
+
+For example:
+
+image1.png: The first image.
+image2.png: The second image.
+Step 2: Create the Main Activity
+This activity contains an ImageView to display the image and a button to change the displayed image.
+
+java
+
+package com.example.changeimage;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ImageView imageView;
+    private boolean isImageOneDisplayed = true; // Track which image is currently displayed
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        imageView = findViewById(R.id.image_view); // The ImageView to display images
+        Button changeImageButton = findViewById(R.id.change_image_button); // Button to change the image
+
+        changeImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeImage();
+            }
+        });
+    }
+
+    private void changeImage() {
+        if (isImageOneDisplayed) {
+            imageView.setImageResource(R.drawable.image2); // Change to image2
+        } else {
+            imageView.setImageResource(R.drawable.image1); // Change to image1
+        }
+
+        isImageOneDisplayed = !isImageOneDisplayed; // Toggle the boolean
+    }
+}
+Step 3: Create the Layout File
+Define a layout with an ImageView to display the image and a Button to change the displayed image.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/image1" <!-- Default image -->
+        android:contentDescription="Displayed Image"/>
+
+    <Button
+        android:id="@+id/change_image_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Image"/>
+
+</LinearLayout>
+
+2]
+Step 1: Define the Menu
+Define an XML resource to represent the options menu with two items: "Find Factorial" and "Find Sum of Digits".
+
+res/menu/options_menu.xml
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_find_factorial"
+        android:title="Find Factorial" />
+    <item
+        android:id="@+id/menu_find_sum_of_digits"
+        android:title="Find Sum of Digits" />
+</menu>
+Step 2: Create the Main Activity
+This activity will contain the EditText for user input and handle menu item selection to perform the required operations.
+
+java
+
+package com.example.factorialsanddigits;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.math.BigInteger;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText numberInput;
+    private TextView resultText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        numberInput = findViewById(R.id.number_input);
+        resultText = findViewById(R.id.result_text);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_menu, menu); // Inflate the options menu
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_find_factorial:
+                findFactorial();
+                return true;
+            case R.id.menu_find_sum_of_digits:
+                findSumOfDigits();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void findFactorial() {
+        String numberStr = numberInput.getText().toString().trim();
+
+        if (TextUtils.isEmpty(numberStr)) {
+            Toast.makeText(this, "Please enter a number.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            int number = Integer.parseInt(numberStr);
+            if (number < 0) {
+                Toast.makeText(this, "Factorial is not defined for negative numbers.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            BigInteger factorial = calculateFactorial(number);
+            resultText.setText("Factorial of " + number + " is " + factorial.toString());
+
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid number.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private BigInteger calculateFactorial(int n) {
+        BigInteger result = BigInteger.ONE;
+        for (int i = 2; i <= n; i++) {
+            result = result.multiply(BigInteger.valueOf(i)); // Multiply by each number from 2 to n
+        }
+        return result;
+    }
+
+    private void findSumOfDigits() {
+        String numberStr = numberInput.getText().toString().trim();
+
+        if (TextUtils.isEmpty(numberStr)) {
+            Toast.makeText(this, "Please enter a number.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            int number = Integer.parseInt(numberStr);
+            int sum = calculateSumOfDigits(number);
+            resultText.setText("Sum of digits of " + number + " is " + sum);
+
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid number.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private int calculateSumOfDigits(int number) {
+        int sum = 0;
+        while (number > 0) {
+            sum += number % 10; // Get the last digit and add to the sum
+            number /= 10; // Remove the last digit
+        }
+        return sum;
+    }
+}
+Step 3: Create the Layout File
+Define a simple layout with an EditText for user input and a TextView to display the result.
+
+res/layout/activity_main.xml
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter a number"/>
+
+    <TextView
+        android:id="@+id/result_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Result will be displayed here"/>
+
+</LinearLayout>

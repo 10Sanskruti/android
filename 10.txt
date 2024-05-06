@@ -1,0 +1,228 @@
+Slip 10
+
+1]
+Step 1: Create the Main Activity
+In this activity, we implement the logic to check if the given number is an Armstrong number and display the result using Toast.
+
+java
+
+package com.example.armstrongchecker;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText numberInput;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        numberInput = findViewById(R.id.getnum); // Text box to enter the number
+
+        Button checkButton = findViewById(R.id.check_button); // Button to initiate the check
+        checkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                checkArmstrong();
+            }
+        });
+    }
+
+    private void checkArmstrong() {
+        String numberStr = numberInput.getText().toString();
+
+        if (TextUtils.isEmpty(numberStr)) {
+            Toast.makeText(this, "Please enter a number.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            int number = Integer.parseInt(numberStr); // Convert the input to an integer
+
+            if (isArmstrong(number)) {
+                Toast.makeText(this, number + " is an Armstrong number.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, number + " is NOT an Armstrong number.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid input. Please enter a valid number.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean isArmstrong(int number) {
+        int originalNumber = number;
+        int sum = 0;
+        int numDigits = String.valueOf(number).length(); // Get the number of digits
+
+        while (number > 0) {
+            int digit = number % 10; // Extract the last digit
+            sum += Math.pow(digit, numDigits); // Add the power of the digit
+            number /= 10; // Remove the last digit
+        }
+
+        return sum == originalNumber; // True if the sum equals the original number
+    }
+}
+Step 2: Create the Layout File
+Design the layout with an EditText for user input and a Button to check whether the entered number is an Armstrong number.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/getnum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter a number"/>
+
+    <Button
+        android:id="@+id/check_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check"/>
+
+</LinearLayout>
+
+2]
+Step 1: Create the Main Activity
+In this step, you'll create an activity that includes the logic for adding and removing items from the spinner.
+
+java
+
+package com.example.spinnermanagement;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText itemInput;
+    private Spinner itemSpinner;
+    private ArrayAdapter<String> spinnerAdapter;
+    private ArrayList<String> itemList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        itemInput = findViewById(R.id.item_input); // Text input for entering items
+        itemSpinner = findViewById(R.id.item_spinner); // Spinner for displaying items
+
+        itemList = new ArrayList<>(); // List to hold spinner items
+        spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, itemList);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        itemSpinner.setAdapter(spinnerAdapter);
+
+        // Button to add an item to the spinner
+        Button addButton = findViewById(R.id.add_button);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addItemToSpinner();
+            }
+        });
+
+        // Button to remove the selected item from the spinner
+        Button removeButton = findViewById(R.id.remove_button);
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                removeItemFromSpinner();
+            }
+        });
+    }
+
+    // Adds a new item to the spinner
+    private void addItemToSpinner() {
+        String item = itemInput.getText().toString().trim();
+
+        if (TextUtils.isEmpty(item)) {
+            Toast.makeText(this, "Please enter an item.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!itemList.contains(item)) {
+            itemList.add(item); // Add to list
+            spinnerAdapter.notifyDataSetChanged(); // Update spinner
+            itemInput.setText(""); // Clear input
+            Toast.makeText(this, "Item added.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Item already exists in the spinner.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    // Removes the selected item from the spinner
+    private void removeItemFromSpinner() {
+        String selectedItem = (String) itemSpinner.getSelectedItem();
+
+        if (selectedItem != null) {
+            itemList.remove(selectedItem); // Remove from list
+            spinnerAdapter.notifyDataSetChanged(); // Update spinner
+            Toast.makeText(this, "Item removed.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "No item selected to remove.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 2: Create the Layout File
+Design a layout with a text input for entering items, a spinner, and buttons to add or remove items.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/item_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter item"/>
+
+    <Button
+        android:id="@+id/add_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add to Spinner"/>
+
+    <Button
+        android:id="@+id/remove_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Remove from Spinner"/>
+
+    <Spinner
+        android:id="@+id/item_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

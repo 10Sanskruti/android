@@ -1,0 +1,273 @@
+Slip 6
+
+1]
+Step 1: Create the Main Activity
+This activity includes the logic to validate user input, handle the login attempt, and display appropriate error messages if validation fails.
+
+java
+
+package com.example.loginvalidation;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Patterns;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText emailInput;
+    private EditText passwordInput;
+    private TextView errorText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        emailInput = findViewById(R.id.email_input);
+        passwordInput = findViewById(R.id.password_input);
+        errorText = findViewById(R.id.error_text);
+
+        Button loginButton = findViewById(R.id.login_button);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                attemptLogin();
+            }
+        });
+    }
+
+    private void attemptLogin() {
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString().trim();
+
+        if (!isEmailValid(email)) {
+            errorText.setText("Invalid email address.");
+            return;
+        }
+
+        if (!isPasswordValid(password)) {
+            errorText.setText("Password must be at least 6 characters long.");
+            return;
+        }
+
+        // If validation passes
+        errorText.setText("Login successful!");
+    }
+
+    private boolean isEmailValid(String email) {
+        return !TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches();
+    }
+
+    private boolean isPasswordValid(String password) {
+        return password.length() >= 6;
+    }
+}
+Step 2: Create the Layout File
+Design the layout for the login form with input fields for email and password, a login button, and a text view for displaying error messages.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:text="Login Form"
+        android:textSize="24sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:paddingBottom="16dp"/>
+
+    <EditText
+        android:id="@+id/email_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"/>
+
+    <EditText
+        android:id="@+id/password_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Password"
+        android:inputType="textPassword"/>
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Login"/>
+
+    <TextView
+        android:id="@+id/error_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@android:color/holo_red_light"
+        android:paddingTop="16dp"/>
+
+</LinearLayout>
+
+2]
+Step 1: Set Up Google Maps API Key
+To use Google Maps in your Android app, you need to set up an API key.
+
+Follow the Google Maps API setup guide.
+Create a project on Google Cloud Platform and enable the Google Maps Android API.
+Generate an API key and add it to your Android project.
+In your AndroidManifest.xml, include the API key as meta-data:
+
+xml
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.locationsearcher">
+
+    <application
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.LocationSearcher">
+
+        <!-- Google Maps API Key -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="YOUR_GOOGLE_MAPS_API_KEY"/>
+
+        <!-- Main Activity -->
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>
+Replace YOUR_GOOGLE_MAPS_API_KEY with your Google Maps API key.
+
+Step 2: Create the Main Activity
+Implement an activity with a SupportMapFragment to display Google Maps and an EditText for user input to search for locations.
+
+java
+
+package com.example.locationsearcher;
+
+import android.location.Address;
+import android.location.Geocoder;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private GoogleMap googleMap;
+    private EditText locationInput;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        locationInput = findViewById(R.id.location_input);
+
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map_fragment);
+        mapFragment.getMapAsync(this);
+
+        Button searchButton = findViewById(R.id.search_button);
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchLocation();
+            }
+        });
+    }
+
+    @Override
+    public void onMapReady(GoogleMap map) {
+        this.googleMap = map;
+
+        // Set an initial location and zoom level (e.g., San Francisco)
+        LatLng initialLocation = new LatLng(37.7749, -122.4194);
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(initialLocation, 10));
+    }
+
+    private void searchLocation() {
+        String locationName = locationInput.getText().toString().trim();
+
+        if (locationName.isEmpty()) {
+            Toast.makeText(this, "Please enter a location to search.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocationName(locationName, 1);
+            if (addresses != null && !addresses.isEmpty()) {
+                Address address = addresses.get(0);
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 12));
+                googleMap.addMarker(new MarkerOptions().position(latLng).title("Location: " + locationName));
+            } else {
+                Toast.makeText(this, "Location not found.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            Toast.makeText(this, "Error occurred while searching for location.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 3: Create the Layout File
+Define the layout with a SupportMapFragment, an EditText for location input, and a Button to trigger the search.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/location_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter location to search"/>
+
+    <Button
+        android:id="@+id/search_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"/>
+
+    <fragment
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:id="@+id/map_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>

@@ -1,0 +1,254 @@
+Slip 17
+
+1]
+Step 1: Create the Main Activity
+In this step, we'll implement the methods that represent the activity life cycle, such as onCreate, onStart, onResume, onPause, onStop, onRestart, and onDestroy. Each method will contain code to show a toast and log a message to help visualize the life cycle.
+
+java
+
+package com.example.activitylifecycle;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "ActivityLifeCycle";
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Toast.makeText(this, "onCreate called", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onCreate called");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Toast.makeText(this, "onStart called", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onStart called");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Toast.makeText(this, "onResume called", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onResume called");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Toast.makeText(this, "onPause called", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onPause called");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Toast.makeText(this, "onStop called", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onStop called");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Toast.makeText(this, "onRestart called", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onRestart called");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Toast.makeText(this, "onDestroy called", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "onDestroy called");
+    }
+}
+Step 2: Create the Layout File
+The layout can be simple, as the primary focus is on the life cycle methods. However, you can include a basic text view to give the activity some content.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Activity Life Cycle Demo"
+        android:textSize="24sp"/>
+
+</LinearLayout>
+
+
+2]
+Step 1: Set Up a PhoneGap Project
+Install PhoneGap or Cordova CLI.
+Create a new PhoneGap project.
+bash
+
+cordova create ContactApp
+cd ContactApp
+Add the Contacts plugin.
+bash
+
+cordova plugin add cordova-plugin-contacts
+Step 2: Define the User Interface
+Create the user interface with buttons for creating, searching, cloning, and removing contacts.
+
+www/index.html
+html
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contact App</title>
+    <script src="cordova.js"></script>
+    <script src="js/index.js"></script>
+</head>
+<body>
+    <h1>Contact App</h1>
+
+    <button onclick="createContact()">Create Contact</button>
+    <button onclick="searchContacts()">Search Contacts</button>
+    <button onclick="cloneContact()">Clone Contact</button>
+    <button onclick="removeContact()">Remove Contact</button>
+
+    <div id="results"></div>
+</body>
+</html>
+Step 3: Implement JavaScript Logic
+Define functions to create, search, clone, and remove contacts using the Cordova Contacts plugin.
+
+www/js/index.js
+javascript
+
+document.addEventListener("deviceready", onDeviceReady, false);
+
+function onDeviceReady() {
+    console.log("Device is ready");
+}
+
+// Function to create a new contact
+function createContact() {
+    var myContact = navigator.contacts.create({
+        "displayName": "John Doe",
+        "name": {
+            "givenName": "John",
+            "familyName": "Doe"
+        },
+        "phoneNumbers": [
+            { "type": "mobile", "value": "1234567890", "pref": false }
+        ]
+    });
+
+    myContact.save(
+        function() {
+            alert("Contact created successfully!");
+        },
+        function(error) {
+            alert("Error creating contact: " + error.code);
+        }
+    );
+}
+
+// Function to search for contacts
+function searchContacts() {
+    var options = new ContactFindOptions();
+    options.filter = "John Doe"; // Search for "John Doe"
+    options.multiple = true;
+    var fields = ["displayName", "name"];
+
+    navigator.contacts.find(
+        fields,
+        function(contacts) {
+            var results = "Found contacts: <br>";
+            contacts.forEach(function(contact) {
+                results += contact.displayName + "<br>";
+            });
+            document.getElementById("results").innerHTML = results;
+        },
+        function(error) {
+            alert("Error searching contacts: " + error.code);
+        },
+        options
+    );
+}
+
+// Function to clone a contact
+function cloneContact() {
+    var options = new ContactFindOptions();
+    options.filter = "John Doe"; // Search for "John Doe"
+    var fields = ["displayName", "name"];
+
+    navigator.contacts.find(
+        fields,
+        function(contacts) {
+            if (contacts.length > 0) {
+                var originalContact = contacts[0];
+                var clonedContact = navigator.contacts.create(originalContact);
+                clonedContact.save(
+                    function() {
+                        alert("Contact cloned successfully!");
+                    },
+                    function(error) {
+                        alert("Error cloning contact: " + error.code);
+                    }
+                );
+            } else {
+                alert("Contact not found to clone.");
+            }
+        },
+        function(error) {
+            alert("Error finding contact: " + error.code);
+        },
+        options
+    );
+}
+
+// Function to remove a contact
+function removeContact() {
+    var options = new ContactFindOptions();
+    options.filter = "John Doe"; // Search for "John Doe"
+    var fields = ["displayName", "name"];
+
+    navigator.contacts.find(
+        fields,
+        function(contacts) {
+            if (contacts.length > 0) {
+                var contactToRemove = contacts[0];
+                contactToRemove.remove(
+                    function() {
+                        alert("Contact removed successfully!");
+                    },
+                    function(error) {
+                        alert("Error removing contact: " + error.code);
+                    }
+                );
+            } else {
+                alert("Contact not found to remove.");
+            }
+        },
+        function(error) {
+            alert("Error finding contact: " + error.code);
+        },
+        options
+    );
+}
+Step 4: Test the Application
+Build and deploy your application to a device or emulator with the Contacts permission.
+
+-- bash(terminal)
+
+cordova build
+cordova run android

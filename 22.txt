@@ -1,0 +1,218 @@
+Slip 22
+
+1]
+Step 1: Define Drawable Resources
+Ensure you have at least two images in your res/drawable folder to switch between. You can add images by dragging them into the drawable folder in your Android project.
+
+For example:
+
+image1.png: The first image.
+image2.png: The second image.
+Step 2: Create the Main Activity
+This activity contains an ImageView to display the image and a button to change the displayed image.
+
+java
+
+package com.example.changeimage;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ImageView imageView;
+    private boolean isImageOneDisplayed = true; // Track which image is currently displayed
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        imageView = findViewById(R.id.image_view); // The ImageView to display images
+        Button changeImageButton = findViewById(R.id.change_image_button); // Button to change the image
+
+        changeImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeImage();
+            }
+        });
+    }
+
+    private void changeImage() {
+        if (isImageOneDisplayed) {
+            imageView.setImageResource(R.drawable.image2); // Change to image2
+        } else {
+            imageView.setImageResource(R.drawable.image1); // Change to image1
+        }
+
+        isImageOneDisplayed = !isImageOneDisplayed; // Toggle the boolean
+    }
+}
+Step 3: Create the Layout File
+Define a layout with an ImageView to display the image and a Button to change the displayed image.
+
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:gravity="center">
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/image1" <!-- Default image -->
+        android:contentDescription="Displayed Image"/>
+
+    <Button
+        android:id="@+id/change_image_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Image"/>
+
+</LinearLayout>
+
+2]
+Step 1: Create the Main Activity
+This activity will contain the logic to perform the selected operation when the user clicks a button.
+
+java
+
+package com.example.numericoperations;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText numberInput;
+    private RadioGroup operationGroup;
+    private TextView resultText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        numberInput = findViewById(R.id.number_input); // EditText to input the number
+        operationGroup = findViewById(R.id.operation_group); // RadioGroup to select an operation
+        resultText = findViewById(R.id.result_text); // TextView to display the result
+
+        Button checkButton = findViewById(R.id.check_button); // Button to trigger the operation
+        checkButton.setOnClickListener(v -> performOperation());
+    }
+
+    private void performOperation() {
+        String numberStr = numberInput.getText().toString().trim();
+
+        if (TextUtils.isEmpty(numberStr)) {
+            Toast.makeText(this, "Please enter a number.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            int number = Integer.parseInt(numberStr); // Convert the input to an integer
+            int selectedOperationId = operationGroup.getCheckedRadioButtonId(); // Get the selected radio button
+
+            if (selectedOperationId == R.id.radio_odd_even) {
+                if (number % 2 == 0) {
+                    resultText.setText("The number is even.");
+                } else {
+                    resultText.setText("The number is odd.");
+                }
+            } else if (selectedOperationId == R.id.radio_positive_negative) {
+                if (number > 0) {
+                    resultText.setText("The number is positive.");
+                } else if (number < 0) {
+                    resultText.setText("The number is negative.");
+                } else {
+                    resultText.setText("The number is zero.");
+                }
+            } else if (selectedOperationId == R.id.radio_square) {
+                int square = number * number; // Calculate the square
+                resultText.setText("The square of the number is: " + square);
+            } else {
+                Toast.makeText(this, "Please select an operation.", Toast.LENGTH_SHORT).show();
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Invalid input. Please enter a valid integer.", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+Step 2: Create the Layout File
+Design the layout with an EditText for user input, a RadioGroup with multiple radio buttons for different operations, and a Button to trigger the operation.
+
+res/layout/activity_main.xml
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/number_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter a number"/>
+
+    <RadioGroup
+        android:id="@+id/operation_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_odd_even"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Odd or Even"/>
+
+        <RadioButton
+            android:id="@+id/radio_positive_negative"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Positive or Negative"/>
+
+        <RadioButton
+            android:id="@+id/radio_square"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Square"/>
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/check_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check"/>
+
+    <TextView
+        android:id="@+id/result_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Result will be displayed here"/>
+
+</LinearLayout>

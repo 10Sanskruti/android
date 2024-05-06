@@ -1,0 +1,259 @@
+Slip 24
+
+1]
+Step 1: Create the Main Activity
+This activity will contain the logic to accept user input and display the string in uppercase and lowercase using Toast messages.
+
+java
+
+package com.example.textconverter;
+
+import android.os.Bundle;
+import android.text.TextUtils;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText userInput; // EditText for user input
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        userInput = findViewById(R.id.user_input);
+
+        Button upperCaseButton = findViewById(R.id.upper_case_button);
+        Button lowerCaseButton = findViewById(R.id.lower_case_button);
+
+        upperCaseButton.setOnClickListener(v -> displayUppercase());
+        lowerCaseButton.setOnClickListener(v -> displayLowercase());
+    }
+
+    private void displayUppercase() {
+        String inputText = userInput.getText().toString().trim();
+
+        if (TextUtils.isEmpty(inputText)) {
+            Toast.makeText(this, "Please enter some text.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String upperCaseText = inputText.toUpperCase();
+        Toast.makeText(this, upperCaseText, Toast.LENGTH_SHORT).show(); // Display as toast message
+    }
+
+    private void displayLowercase() {
+        String inputText = userInput.getText().toString().trim();
+
+        if (TextUtils.isEmpty(inputText)) {
+            Toast.makeText(this, "Please enter some text.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String lowerCaseText = inputText.toLowerCase();
+        Toast.makeText(this, lowerCaseText, Toast.LENGTH_SHORT).show(); // Display as toast message
+    }
+}
+Step 2: Create the Layout File
+This layout contains an EditText for user input and two buttons to trigger displaying the string in uppercase and lowercase using Toast.
+
+res/layout/activity_main.xml
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/user_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter text"/>
+
+    <Button
+        android:id="@+id/upper_case_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Display Uppercase"/>
+
+    <Button
+        android:id="@+id/lower_case_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Display Lowercase"/>
+
+</LinearLayout>
+
+2]
+Step 1: Create the SQLite Database Helper
+Define a helper class to manage creating the "Car" table, inserting new records, and retrieving all records.
+
+java
+
+package com.example.cardatabase;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+public class CarDatabaseHelper extends SQLiteOpenHelper {
+
+    private static final String DATABASE_NAME = "CarDatabase";
+    private static final int DATABASE_VERSION = 1;
+
+    private static final String TABLE_CAR = "Car";
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_TYPE = "type";
+    private static final String COLUMN_COLOR = "color";
+
+    public CarDatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // Create the Car table
+        String createTableQuery = "CREATE TABLE " + TABLE_CAR + " (" +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_NAME + " TEXT, " +
+                COLUMN_TYPE + " TEXT, " +
+                COLUMN_COLOR + " TEXT)";
+        db.execSQL(createTableQuery);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_CAR);
+        onCreate(db);
+    }
+
+    // Insert a new record into the Car table
+    public boolean addCar(String name, String type, String color) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_NAME, name);
+        values.put(COLUMN_TYPE, type);
+        values.put(COLUMN_COLOR, color);
+
+        long result = db.insert(TABLE_CAR, null, values);
+        return result != -1; // Returns true if insertion was successful
+    }
+
+    // Retrieve all records from the Car table
+    public Cursor getAllCars() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_CAR;
+        return db.rawQuery(query, null); // Retrieve all records
+    }
+}
+Step 2: Create the Main Activity
+This activity will insert new car details and show all car details based on button clicks.
+
+java
+
+package com.example.cardatabase;
+
+import android.database.Cursor;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+
+    private CarDatabaseHelper dbHelper; // SQLite database helper
+    private TextView resultText;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedSession);
+        setContentView(R.layout.activity_main);
+
+        dbHelper = new CarDatabaseHelper(this); // Initialize the database helper
+        resultText = findViewById(R.id.result_text); // TextView to display results
+
+        Button insertButton = findViewById(R.id.insert_button); // Button to insert new records
+        Button showAllButton = findViewById(R.id.show_all_button); // Button to show all car details
+
+        insertButton.setOnClickListener(v -> insertNewCars());
+        showAllButton.setOnClickListener(v -> showAllCars());
+    }
+
+    private void insertNewCars() {
+        dbHelper.addCar("Toyota Corolla", "Sedan", "White");
+        dbHelper.addCar("Ford F-150", "Truck", "Black");
+        dbHelper.addCar("Honda Civic", "Sedan", "Blue");
+        dbHelper.addCar("Chevrolet Tahoe", "SUV", "Red");
+        dbHelper.addCar("Jeep Wrangler", "SUV", "Green");
+
+        resultText.setText("5 new car details inserted.");
+    }
+
+    private void showAllCars() {
+        Cursor cursor = dbHelper.getAllCars(); // Get all car records
+
+        if (cursor != null && cursor.moveToFirst()) {
+            StringBuilder sb = new StringBuilder();
+            do {
+                int id = cursor.getInt(cursor.getColumnIndex(CarDatabaseHelper.COLUMN_ID));
+                String name = cursor.getString(cursor.getColumnIndex(CarDatabaseHelper.COLUMN_NAME));
+                String type = cursor.getString(cursor.getColumnIndex(CarDatabaseHelper.COLUMN_TYPE));
+                String color = cursor.getString(cursor.getColumnIndex(CarDatabaseHelper.COLUMN_COLOR));
+
+                sb.append("ID: ").append(id).append("\n");
+                sb.append("Name: ").append(name).append("\n");
+                sb.append("Type: ").append(type).append("\n");
+                sb.append("Color: ").append(color).append("\n");
+                sb.append("---------------------------\n");
+            } while (cursor.moveToNext());
+
+            resultText.setText(sb.toString());
+        } else {
+            resultText.setText("No car records found.");
+        }
+    }
+}
+Step 3: Create the Layout File
+This layout contains buttons to trigger inserting new records and displaying all car details, along with a TextView to display the results.
+
+res/layout/activity_main.xml
+xml
+
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <Button
+        android:id="@+id/insert_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Insert 5 New Car Details"/>
+
+    <Button
+        android:id="@+id/show_all_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Show All Car Details"/>
+
+    <TextView
+        android:id="@+id/result_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Results will be displayed here"/>
+
+</LinearLayout>
